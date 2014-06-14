@@ -9,11 +9,14 @@
 
 #include "leveldb/db.h"
 #include "leveldb/write_batch.h"
+#include "leveldb/zlib_compressor.h"
 
 static jmethodID gByteBuffer_isDirectMethodID;
 static jmethodID gByteBuffer_positionMethodID;
 static jmethodID gByteBuffer_limitMethodID;
 static jmethodID gByteBuffer_arrayMethodID;
+
+static leveldb::ZlibCompressor* zlibCompressorInstance;
 
 static jlong
 nativeOpen(JNIEnv* env,
@@ -41,6 +44,11 @@ nativeOpen(JNIEnv* env,
     leveldb::DB* db;
     leveldb::Options options;
     options.create_if_missing = true;
+    options.paranoid_checks = true;
+    if (zlibCompressorInstance == NULL) {
+        zlibCompressorInstance = new leveldb::ZlibCompressor();
+    }
+    options.compressors[0] = zlibCompressorInstance;
     leveldb::Status status = leveldb::DB::Open(options, path, &db);
     env->ReleaseStringUTFChars(dbpath, path);
 

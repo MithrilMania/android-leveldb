@@ -1,0 +1,3 @@
+[submodule "library/jni/leveldb"]
+	path = library/jni/leveldb
+	url = https://github.com/Mojang/leveldb-mcpe.git
