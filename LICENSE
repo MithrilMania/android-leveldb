@@ -1,10 +1,8 @@
 Copyright (c) 2013 litl, LLC
 
-Files in library/jni/leveldb-1.9.0/ are
-Copyright (c) 2011 The LevelDB Authors. All rights reserved.
+Please see CONTRIBUTORS.md for contributor information.
 
-Files in library/jni/snappy-1.1.0 are
-Copyright 2011, Google Inc. All rights reserved.
+IMPORTANT NOTE: Git sub-modules are individually licensed.
 
 
 Redistribution and use in source and binary forms, with or without
