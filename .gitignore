@@ -1,7 +1,6 @@
 bin
 gen
 obj
-library/libs/armeabi-v7a
 local.properties
 .DS_Store
 .metadata
@@ -24,6 +23,8 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
+
+
 ### Android template
 # Built application files
 *.apk
@@ -59,7 +60,7 @@ captures/
 
 # Intellij
 *.iml
-.idea/workspace.xml
+.idea
 
 # Keystore files
 *.jks
