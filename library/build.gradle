@@ -1,0 +1,57 @@
+import org.gradle.api.GradleException
+import org.apache.tools.ant.taskdefs.condition.Os
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        minSdkVersion 8
+        targetSdkVersion 23
+    }
+
+    sourceSets.main {
+        jniLibs.srcDirs = ['src/main/libs']
+        jni.srcDirs = []
+    }
+
+}
+
+def getNdkDir() {
+    if (System.env.ANDROID_NDK_ROOT != null)
+        return System.env.ANDROID_NDK_ROOT
+
+    Properties properties = new Properties()
+
+    /*
+        Load properties with path to ndk
+        Example config (for linux):
+
+        ndk.dir=/opt/android-sdk/ndk-bundle
+        sdk.dir=/opt/android-sdk
+     */
+    def localPropertiesFile = rootProject.file("local.properties")
+    def localProperties = new Properties()
+    if(localPropertiesFile == null) throw new GradleException("NDK location not specified with ANDROID_NDK_ROOT or in local.properties file.")
+    localProperties.load(new FileInputStream(localPropertiesFile))
+    def ndkdir = properties.getProperty('ndk.dir', null)
+    if (ndkdir == null)
+        throw new GradleException("NDK location not found. Define location with ndk.dir in the local.properties file or with an ANDROID_NDK_ROOT environment variable.")
+
+    return ndkdir
+}
+
+task ndkBuild(type: Exec) {
+
+    String ndkBuild = getNdkDir() + File.separator + 'ndk-build'
+
+    // Arch linux FTW, however, I think this works for Windows users???
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) ndkBuild += ".cmd"
+
+    commandLine ndkBuild, '-C', 'src/main'
+}
+tasks.withType(JavaCompile) {
+    compileTask -> compileTask.dependsOn ndkBuild
+}
