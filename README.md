@@ -23,6 +23,27 @@ The only external dependencies are Android SDK and NDK.
 5. Library should be ready now!
 
 
+## Installation
+
+After building, include the library module in your own project like this:
+
+`your-project/settings.gradle`
+
+    include ':android-leveldb'
+    project(':android-leveldb').projectDir = new File(rootProject.projectDir, '../android-leveldb/library')
+
+This assumes that you cloned the android-leveldb git repository in the parent-folder of your-project.
+
+And add the module as dependency in `your-project/app/build.gradle`:
+
+    //include .so files in the build (native libraries)
+    compile fileTree(include: ['*.jar', '*.so'], dir: 'libs')
+
+    //include the android-leveldb library (see settings.gradle)
+    compile project(':android-leveldb')
+
+
+
 ## License
 
 Please see the [LICENSE](LICENSE) file.
