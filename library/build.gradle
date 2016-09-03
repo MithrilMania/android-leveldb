@@ -20,7 +20,7 @@ android {
 
     sourceSets.main {
         jniLibs.srcDirs = ['src/main/libs']
-        jni.srcDirs = []
+        jni.srcDirs = []//use "Build > Make project" in Android Studio to make jni libs manually
     }
 
 }

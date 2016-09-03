@@ -2,5 +2,5 @@
 	path = library/jni/leveldb
 	url = https://github.com/Mojang/leveldb-mcpe.git
 [submodule "library/src/main/jni/leveldb-mcpe"]
-	path = library/src/main/jni/leveldb-mcpe
+	path = library/src/main/jni/leveldb
 	url = https://github.com/protolambda/leveldb-mcpe.git
