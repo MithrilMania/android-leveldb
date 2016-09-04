@@ -30,6 +30,10 @@ abstract class NativeObject implements Closeable {
         return mPtr;
     }
 
+    synchronized public boolean isClosed(){
+        return getPtr() == 0;
+    }
+
     protected void assertOpen(String message) {
         if (getPtr() == 0) {
             throw new IllegalStateException(message);
