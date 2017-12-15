@@ -10,6 +10,11 @@
 #include "leveldb/db.h"
 #include "leveldb/write_batch.h"
 #include "leveldb/zlib_compressor.h"
+#include "leveldb/filter_policy.h"
+#include "leveldb/cache.h"
+#include "leveldb/options.h"
+#include "leveldb/decompress_allocator.h"
+#include "leveldb/env.h"
 
 static jmethodID gByteBuffer_isDirectMethodID;
 static jmethodID gByteBuffer_positionMethodID;
@@ -17,6 +22,12 @@ static jmethodID gByteBuffer_limitMethodID;
 static jmethodID gByteBuffer_arrayMethodID;
 
 static leveldb::ZlibCompressor* zlibCompressorInstance;
+
+class NullLogger : public leveldb::Logger {
+	public:
+		void Logv(const char*, va_list) override {
+		}
+	};
 
 static jlong
 nativeOpen(JNIEnv* env,
@@ -48,7 +59,23 @@ nativeOpen(JNIEnv* env,
     if (zlibCompressorInstance == NULL) {
         zlibCompressorInstance = new leveldb::ZlibCompressor();
     }
-    options.compressors[0] = zlibCompressorInstance;
+
+	//create a bloom filter to quickly tell if a key is in the database or not
+	options.filter_policy = leveldb::NewBloomFilterPolicy(10);
+
+	//create a 40 mb cache (we use this on ~1gb devices)
+	options.block_cache = leveldb::NewLRUCache(40 * 1024 * 1024);
+
+	//create a 4mb write buffer, to improve compression and touch the disk less
+	options.write_buffer_size = 4 * 1024 * 1024;
+
+	//disable internal logging. The default logger will still print out things to a file
+	options.info_log = new NullLogger();
+
+	//use the new raw-zip compressor to write (and read)
+	options.compressors[0] = new leveldb::ZlibCompressorRaw(-1);
+
+    options.compressors[1] = zlibCompressorInstance;
     leveldb::Status status = leveldb::DB::Open(options, path, &db);
     env->ReleaseStringUTFChars(dbpath, path);
 
@@ -83,6 +110,7 @@ nativeGet(JNIEnv * env,
 {
     leveldb::DB* db = reinterpret_cast<leveldb::DB*>(dbPtr);
     leveldb::ReadOptions options = leveldb::ReadOptions();
+	options.decompress_allocator = new leveldb::DecompressAllocator();
     options.snapshot = reinterpret_cast<leveldb::Snapshot*>(snapshotPtr);
 
     size_t keyLen = env->GetArrayLength(keyObj);
