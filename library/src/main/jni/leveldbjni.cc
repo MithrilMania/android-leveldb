@@ -1,12 +1,16 @@
 #include "leveldbjni.h"
 
 extern int register_com_litl_leveldb_DB(JNIEnv *env);
+
 extern int register_com_litl_leveldb_WriteBatch(JNIEnv *env);
+
 extern int register_com_litl_leveldb_Iterator(JNIEnv *env);
 
+extern int register_com_litl_leveldb_Chunk(JNIEnv *env);
+
 jint
-throwException(JNIEnv* env, leveldb::Status status) {
-    const char* exceptionClass;
+throwException(JNIEnv *env, leveldb::Status status) {
+    const char *exceptionClass;
 
     if (status.IsNotFound()) {
         exceptionClass = "com/litl/leveldb/NotFoundException";
@@ -27,9 +31,8 @@ throwException(JNIEnv* env, leveldb::Status status) {
     return env->ThrowNew(clazz, status.ToString().c_str());
 }
 
-jint JNI_OnLoad(JavaVM* vm, void *reserved)
-{
-    JNIEnv* env;
+jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+    JNIEnv *env;
     if (vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_6) != JNI_OK) {
         return -1;
     }
@@ -37,6 +40,7 @@ jint JNI_OnLoad(JavaVM* vm, void *reserved)
     register_com_litl_leveldb_DB(env);
     register_com_litl_leveldb_WriteBatch(env);
     register_com_litl_leveldb_Iterator(env);
+    register_com_litl_leveldb_Chunk(env);
 
     return JNI_VERSION_1_6;
 }

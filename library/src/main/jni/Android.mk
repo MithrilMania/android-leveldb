@@ -2,10 +2,12 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := leveldbjni
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/leveldb/include
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/leveldb/include $(LOCAL_PATH)/leveldb/include/leveldb
 LOCAL_CPP_EXTENSION := .cc
 LOCAL_CFLAGS := -DLEVELDB_PLATFORM_ANDROID -std=gnu++11 -DDLLX=
-LOCAL_SRC_FILES := com_litl_leveldb_DB.cc com_litl_leveldb_Iterator.cc com_litl_leveldb_WriteBatch.cc leveldbjni.cc
+LOCAL_SRC_FILES := com_litl_leveldb_DB.cc com_litl_leveldb_Iterator.cc\
+                    com_litl_leveldb_WriteBatch.cc leveldbjni.cc com_litl_leveldb_Chunk.cc\
+                    subchunk.cc Chunk.cc blocknames.cc
 LOCAL_STATIC_LIBRARIES +=  leveldb
 LOCAL_LDLIBS +=  -llog -ldl -lz
 
